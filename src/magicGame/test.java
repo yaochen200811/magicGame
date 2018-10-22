@@ -2,27 +2,32 @@ package magicGame;
 
 public class test {
 	public static void main(String[] args) {
-		A a = new A();
-		a.a = 1;
-		A a2 = new A();
-		a2.a += 1;
-		A.a += 1;
-		B b = new B();
-		b.a += 1;
-		B.a += 1;
-		System.out.println(A.a);
+		final int v1;
+		A a = new B();
+		System.out.println((a).a[0]);
 	}
 }
 
-class A{
-	public static int a;
-	
-	A(){
+class A {
+	public int a[] = { 1 };
+
+	A() {
 	}
+
+	public void aMe() {
+		System.out.println(1);
+	}
+
 }
 
-class B extends A{
-	B(){
-		
+class B extends A {
+	public int[] a = { 3 };
+
+	B() {
+
+	}
+
+	public void aMe() {
+		System.out.println(2);
 	}
 }

@@ -1,7 +1,7 @@
 package magicGame;
 
 public class CheckBox {
-	private int width, height, r;
+	int width, height, r;
 	private double x, y;
 	private String type;
 	

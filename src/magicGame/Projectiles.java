@@ -9,11 +9,38 @@ public class Projectiles extends ArrayList<Projectile>{
 	private static final long serialVersionUID = 5224869620057894418L;
 
 	public boolean add(int projectileID, int x, int y, double dx, double dy, double degree) {
-		super.size();
 		try {
-			this.add(new Projectile(projectileID, x, y, dx, dy, degree));
+			//System.out.println(4);
+			this.add(0, new Projectile(projectileID, x, y, dx, dy, degree));
+			//System.out.println(3);
 			return true;
 		}catch(Exception e) {
+			return false;
+		}
+		
+	}
+	
+	public boolean add(SpellConstruct sc, int x, int y, double dx, double dy, double degree) {
+		try {
+			//System.out.println(4);
+			this.add(0, new Projectile(sc, x, y, dx, dy, degree));
+			//System.out.println(3);
+			return true;
+		}catch(Exception e) {
+			System.out.println(e.getMessage());
+			return false;
+		}
+		
+	}
+	
+	public boolean add(SpellConstruct sc, double x, double y, double dx, double dy, double degree) {
+		try {
+			//System.out.println(4);
+			this.add(0, new Projectile(sc, x, y, dx, dy, degree));
+			//System.out.println(3);
+			return true;
+		}catch(Exception e) {
+			System.out.println(e.getMessage());
 			return false;
 		}
 		
@@ -22,17 +49,28 @@ public class Projectiles extends ArrayList<Projectile>{
 	
 	
 	
-	public void update(CheckBoxs[] CBsList, Group pane) {
+	public void update(CheckBoxs[] CBsList) {
 		int moveIndex = 0;
-		while (moveIndex < this.size()) {
-			if (!isCollision(CBsList, this.get(moveIndex))) {
-				this.get(moveIndex).setNewCoor(this.get(moveIndex).velocity);
-				this.get(moveIndex).checkBox.move(this.get(moveIndex).velocity);
-				moveIndex ++;
+		while(moveIndex < this.size()) {
+			//System.out.println(3);
+			if (this.get(moveIndex).fading) {
+				//System.out.println(2);
+				if (this.get(moveIndex).fadingMove()) {
+					this.remove(moveIndex);
+				}
 			}else {
-				pane.getChildren().remove(this.get(moveIndex).imageView);
-				this.remove(moveIndex);
+				//System.out.println(0);
+				if (this.get(moveIndex).getHit()) {
+				}else if (!isCollision(CBsList, this.get(moveIndex))) {
+					//System.out.println(1);
+					this.get(moveIndex).setNewCoor(this.get(moveIndex).velocity);
+					this.get(moveIndex).checkBox.move(this.get(moveIndex).velocity);
+					
+				}else {
+					this.get(moveIndex).startFading();
+				}
 			}
+			moveIndex ++;
 		}
 	}
 	

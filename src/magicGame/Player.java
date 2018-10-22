@@ -5,12 +5,13 @@ import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 
 public class Player extends Entity{
-	static final int MOVESPEED = 3, JUMPFORCE = 20, STAFFCENTERX = 25, STAFFCENTERY = 64,
-			FIRERATE = 5;
+	static final int MOVESPEED = 3, JUMPFORCE = 22, STAFFCENTERX = 25, STAFFCENTERY = 64,
+			FIRERATE = 10;
 	private boolean isMovingLeft, isMovingRight, isJumping, isFiring, isFireDown,
-	leftKeyDown, rightKeyDown , isTurning, faceRight;
+	leftKeyDown, rightKeyDown , isTurning, faceRight, isFireLeft, isFireRight;
 	private double lookAtX, lookAtY, turnCounter;
 	private int fireCounter;
+	ImageView playerView, staffView;
 	
 	public Player() {
 		x = 615;
@@ -27,12 +28,22 @@ public class Player extends Entity{
 		isOnGround = false;
 		isFiring = false;
 		isFireDown = false;
+		isFireLeft = false;
+		isFireRight = false;
 		leftKeyDown = false;
 		rightKeyDown = false;
 		isTurning = false;
 		faceRight = true;
 		checkBox = new CheckBox(x, y, 50, 87);
-		image = new Image("/images/playerImage.png");
+//		image = new Image("/images/playerImage.png");
+		
+		playerView = new ImageView("/images/playerImage.png");
+		playerView.relocate(getX(), getY());
+		painter.pane.getChildren().add(playerView);
+		
+		staffView = new ImageView("/images/staff.png");
+		staffView.relocate(getStaffX(), getStaffY());
+		painter.pane.getChildren().add(staffView);
 	}
 	
 	public void startMovingRight() {
@@ -95,12 +106,20 @@ public class Player extends Entity{
 		return turnCounter;
 	}
 	
-	public void setFireDown(boolean state) {
-		isFireDown = state;
+	public void setFireDown(boolean state, int type) {
+		switch(type) {
+		case 1:
+			isFireLeft = state;
+			break;
+		case 3:
+			isFireRight = state;
+			System.out.println("fight");
+			break;
+		}
 	}
 	
-	public ImageView repuireFire() {
-		if ((!isFiring)&&(isFireDown)) {
+	public void repuireFire() {
+		if ((!isFiring)&&(isFireLeft || isFireRight)) {
 			isFiring = true;
 			fireCounter = FIRERATE;
 			double degree = Math.atan((lookAtY - (y + STAFFCENTERY)) / (lookAtX - (x + STAFFCENTERX)));
@@ -110,12 +129,20 @@ public class Player extends Entity{
 				dx = -dx;
 				dy = -dy;
 			}
-			painter.projectiles.add(Projectile.BASICBULLET, x + STAFFCENTERX - 14, y + STAFFCENTERY - 31, dx, dy, getStaffRotation());
-			return painter.projectiles.get(painter.projectiles.size()-1).imageView;
-		}return null;
+			if (isFireLeft) {
+				painter.projectiles.add(new SpellConstruct(new Integer[] {0,14}), x + STAFFCENTERX, y + STAFFCENTERY, dx, dy, getStaffRotation());
+			}else if(isFireRight) {
+				
+				painter.projectiles.add(new SpellConstruct(new Integer[] {0,15,32,30,32,-30,0,14,32,30,32,50,0,13,0,12,0,11,32,-30,0,10}), x + STAFFCENTERX, y + STAFFCENTERY, dx, dy, getStaffRotation());
+				//System.out.println("fire");
+			}
+			//System.out.println(painter.projectiles.size());
+		}
 	}
 	
 	public void updateState() {
+    	checkMove();
+    	
 		if (isFiring) {
 			if (fireCounter > 0) {
 				fireCounter -= 1;
@@ -139,5 +166,12 @@ public class Player extends Entity{
 			velocity[0] += MOVESPEED;
 			isMovingLeft = false;
 		}
+		
+		
+    	playerView.relocate(getX(),getY());
+    	playerView.setScaleX(getFaceDir());
+    	staffView.relocate(getStaffX(), getStaffY());
+    	staffView.setRotate(getStaffRotation());
+    	repuireFire();
 	}
 }

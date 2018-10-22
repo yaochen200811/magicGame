@@ -1,6 +1,7 @@
 package magicGame;
 
 import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
 
 public abstract class Entity {
 	static final int GRAVITY = 1;
@@ -8,6 +9,7 @@ public abstract class Entity {
 	double [] velocity;
 	boolean isOnGround;
 	Image image;
+	ImageView imageView;
 	CheckBox checkBox; 
 	
 	
@@ -23,7 +25,9 @@ public abstract class Entity {
 		return y;
 	}
 	
-	public void checkMove(CheckBoxs[] CBsList) {
+	public void checkMove() {
+		
+		CheckBoxs[] CBsList = new CheckBoxs[]{painter.hardCB, painter.fieldCB};
 		double[] tempVelocity = velocity.clone();
 		boolean downXCheck = false, downYCheck = false;
 		
@@ -49,8 +53,10 @@ public abstract class Entity {
 					if(this.checkBox.isOverlap(cb, new double[] { 0, tempVelocity[1]})) {
 						if (tempVelocity[1] > 0) {
 							tempVelocity[1] -= 1;
+							
 						}else if (tempVelocity[1] < 0) {
 							tempVelocity[1] += 1;
+							velocity[1] += 1;
 						}else {
 							downYCheck = true;
 						}
@@ -76,11 +82,13 @@ public abstract class Entity {
 		if (isOnGround) {
 			if (velocity[1] > 0) {
 					velocity[1] = 0;
+					tempVelocity[1] = 0;
+					isOnGround = false;
+					return tempVelocity;
 				}
-		}else {
-			velocity[1] += GRAVITY;
-			tempVelocity[1] += GRAVITY;
 		}
+		velocity[1] += GRAVITY;
+		tempVelocity[1] += GRAVITY;
 		return tempVelocity;
 	}
 	

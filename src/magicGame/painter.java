@@ -24,6 +24,12 @@ public class painter extends Application{
 	public static Projectiles projectiles = new Projectiles();
 	public static CheckBoxs hardCB = new CheckBoxs();
 	public static CheckBoxs softCB = new CheckBoxs();
+	public static Group  pane = new Group ();
+	public static Particles particles = new Particles();
+	public static Enemys enemys = new Enemys();
+	
+	static CheckBoxs fieldCB = new CheckBoxs();
+
 	
 	public static void main(String[] args) {
 		launch(args);
@@ -40,15 +46,18 @@ public class painter extends Application{
 		
 		back.add(0, 0, new Image("/images/backGround.jpg"), 0, 0);
 		back.add(0, 520, new Image("/images/floor.jpg"), 1280, 200);
+		Image boardImage = new Image("/images/board1.png");
+		for (int i = 0; i < 5; i ++) {
+			back.add(i * 50 + 250, 345, boardImage, 50, 50);
+		}
+		for (int i = 0; i < 5; i ++) {
+			back.add(1280 - (i * 50 + 300), 345, boardImage, 50, 50);
+		}
 		
-		CheckBoxs fieldCB = new CheckBoxs();
 		fieldCB.add(new CheckBox(0,0,1280, 0));
 		fieldCB.add(new CheckBox(0,0,0, 720));
 		fieldCB.add(new CheckBox(1280,0,0, 720));
-		
-		Player player = new Player();
-		
-		Group  pane = new Group ();
+	
 		
 		for (Part part: back) {
 			ImageView iv = new ImageView(part.getImage());
@@ -56,13 +65,19 @@ public class painter extends Application{
 			pane.getChildren().add(iv);
 		}
 		
-		ImageView playerView = new ImageView(player.getImage());
-		playerView.relocate(player.getX(), player.getY());
-		pane.getChildren().add(playerView);
+		Player player = new Player();
+		enemys.add(new TrainerMan());
 		
-		ImageView staffView = new ImageView("/images/staff.png");
-		staffView.relocate(player.getStaffX(), player.getStaffY());
-		pane.getChildren().add(staffView);
+		
+		
+//		ImageView playerView = new ImageView(player.getImage());
+//		playerView.relocate(player.getX(), player.getY());
+//		pane.getChildren().add(playerView);
+//		
+//		ImageView staffView = new ImageView("/images/staff.png");
+//		staffView.relocate(player.getStaffX(), player.getStaffY());
+//		pane.getChildren().add(staffView);
+		
 
 		Scene scene = new Scene(pane, 1280, 720);
 		
@@ -120,14 +135,16 @@ public class painter extends Application{
 		scene.setOnMousePressed(new EventHandler<MouseEvent>() {
 			
 			public void handle(MouseEvent e) {
-				player.setFireDown(true);
+				player.setFireDown(true, e.getButton().ordinal());
+				System.out.println(e.getButton().ordinal());
 			}
 		});
 		
 		scene.setOnMouseReleased(new EventHandler<MouseEvent>() {
 			
 			public void handle(MouseEvent e) {
-				player.setFireDown(false);
+				player.setFireDown(false, e.getButton().ordinal());
+				System.out.println(e.getButton().ordinal());
 			}
 		});
 		
@@ -143,17 +160,14 @@ public class painter extends Application{
             public void handle(long now) {
             	hardCB.add(back);
             	player.updateState();
-            	player.checkMove(new CheckBoxs[]{hardCB, fieldCB});
-            	playerView.relocate(player.getX(),player.getY());
-            	playerView.setScaleX(player.getFaceDir());
-            	staffView.relocate(player.getStaffX(), player.getStaffY());
-            	staffView.setRotate(player.getStaffRotation());;
-				try {
-					pane.getChildren().add(player.repuireFire());
-				}catch(Exception ex) {
-					
-				}
-				projectiles.update(new CheckBoxs[]{hardCB, fieldCB}, pane);
+//            	playerView.relocate(player.getX(),player.getY());
+//            	playerView.setScaleX(player.getFaceDir());
+//            	staffView.relocate(player.getStaffX(), player.getStaffY());
+//            	staffView.setRotate(player.getStaffRotation());
+//				player.repuireFire();
+				projectiles.update(new CheckBoxs[]{hardCB, fieldCB});
+				particles.update();
+				enemys.update();
             }
         };
         timer.start();
