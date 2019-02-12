@@ -15,8 +15,12 @@ import javafx.scene.input.MouseEvent;
 import javafx.event.EventHandler;
 
 import java.util.ArrayList;
+import java.util.Timer;
+import java.util.TimerTask;
 
 import javafx.animation.AnimationTimer;
+import javafx.animation.KeyFrame;
+import javafx.animation.Timeline;
 
 public class painter extends Application{ 
 
@@ -27,8 +31,14 @@ public class painter extends Application{
 	public static Group  pane = new Group ();
 	public static Particles particles = new Particles();
 	public static Enemys enemys = new Enemys();
+	public static 	ConstructPanel cp;
 	
 	static CheckBoxs fieldCB = new CheckBoxs();
+	
+	int freshCounter, timecounter;
+	Player player;
+	Control control;
+
 
 	
 	public static void main(String[] args) {
@@ -43,29 +53,31 @@ public class painter extends Application{
 	}
 	
 	void initUI(Stage stage) {
+		cp = new ConstructPanel(stage);
 		
-		back.add(0, 0, new Image("/images/backGround.jpg"), 0, 0);
-		back.add(0, 520, new Image("/images/floor.jpg"), 1280, 200);
+		back.add(0, 0, new Image("/images/backGround.png"), 0, 0);
+		back.add(0, 520, new Image("/images/floor.png"), 1280, 200);
+		
 		Image boardImage = new Image("/images/board1.png");
 		for (int i = 0; i < 5; i ++) {
-			back.add(i * 50 + 250, 345, boardImage, 50, 50);
+			back.add(i * 50 + 240, 345, boardImage, 50, 25);
 		}
 		for (int i = 0; i < 5; i ++) {
-			back.add(1280 - (i * 50 + 300), 345, boardImage, 50, 50);
+			back.add(1280 - (i * 50 + 300), 355, boardImage, 50, 25);
 		}
 		
 		fieldCB.add(new CheckBox(0,0,1280, 0));
 		fieldCB.add(new CheckBox(0,0,0, 720));
 		fieldCB.add(new CheckBox(1280,0,0, 720));
-	
 		
 		for (Part part: back) {
 			ImageView iv = new ImageView(part.getImage());
 			iv.relocate(part.getX(), part.getY());
 			pane.getChildren().add(iv);
 		}
-		
-		Player player = new Player();
+		hardCB.add(back);
+		particles.add(new MahoJing());
+		player = new Player();
 		enemys.add(new TrainerMan());
 		
 		
@@ -80,71 +92,46 @@ public class painter extends Application{
 		
 
 		Scene scene = new Scene(pane, 1280, 720);
-		
+		control = new ControlFight(this);
 		scene.setOnKeyPressed(new EventHandler<KeyEvent>(){
 			
 			public void handle(KeyEvent event) {
-				System.out.println("key pressed: " + event.getCode());
-				switch (event.getCode()) {
-				case D:
-					player.startMovingRight();
-					break;
-				case A:
-					player.startMovingLeft();
-					break;
-				case SPACE:
-					player.startJumping();
-					break;
-				default:
-					break;
-				}
+				control.keyPressed(event);
 			}
 		});
 		
 		scene.setOnKeyReleased(new EventHandler<KeyEvent>(){
 					
 			public void handle(KeyEvent event) {
-				System.out.println("key released: " + event.getCode());
-				switch (event.getCode()) {
-				case D:
-					player.stopMovingRight();
-					break;
-				case A:
-					player.stopMovingLeft();
-					break;
-				default:
-					break;
-				}
+				control.keyReleased(event);
 			}
 		});
 		
 		scene.setOnMouseMoved(new EventHandler<MouseEvent>() {
 			
 			public void handle(MouseEvent e) {
-				player.setLookAt(e.getSceneX(), e.getSceneY());
+				control.mouseMoved(e);
 			}
 		});
 		
 		scene.setOnMouseDragged(new EventHandler<MouseEvent>() {
 			
 			public void handle(MouseEvent e) {
-				player.setLookAt(e.getSceneX(), e.getSceneY());
+				control.mouseDragged(e);
 			}
 		});
 		
 		scene.setOnMousePressed(new EventHandler<MouseEvent>() {
 			
 			public void handle(MouseEvent e) {
-				player.setFireDown(true, e.getButton().ordinal());
-				System.out.println(e.getButton().ordinal());
+				control.mousePressed(e);
 			}
 		});
-		
+
 		scene.setOnMouseReleased(new EventHandler<MouseEvent>() {
 			
 			public void handle(MouseEvent e) {
-				player.setFireDown(false, e.getButton().ordinal());
-				System.out.println(e.getButton().ordinal());
+				control.mouseReleased(e);
 			}
 		});
 		
@@ -155,22 +142,27 @@ public class painter extends Application{
 		stage.setScene(scene);
 		stage.show();
 		
+		freshCounter = 0;
+		timecounter = 0;
+		
 		AnimationTimer timer =new AnimationTimer() {
             @Override
             public void handle(long now) {
-            	hardCB.add(back);
-            	player.updateState();
-//            	playerView.relocate(player.getX(),player.getY());
-//            	playerView.setScaleX(player.getFaceDir());
-//            	staffView.relocate(player.getStaffX(), player.getStaffY());
-//            	staffView.setRotate(player.getStaffRotation());
-//				player.repuireFire();
-				projectiles.update(new CheckBoxs[]{hardCB, fieldCB});
-				particles.update();
-				enemys.update();
+            	control.updateTimer();
             }
         };
         timer.start();
+        
+        
+        Timer FPStimer = new Timer();
+        TimerTask Task1 = new TimerTask() {
+            @Override
+            public void run() {
+                timecounter += 1;
+            }
+        };
+        FPStimer.scheduleAtFixedRate(Task1, 0l, 1);
+        
         
         scene.setOnMouseExited(new EventHandler<MouseEvent>() {
 			
@@ -186,6 +178,15 @@ public class painter extends Application{
 			}
 		});
 
+	}
+	
+	public void showFPS() {
+		freshCounter += 1;
+		if (timecounter >= 1000) {
+			timecounter = 0;
+			System.out.println(freshCounter);
+			this.freshCounter = 0;
+		}
 	}
 
 }

@@ -5,7 +5,7 @@ import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 
 public class Player extends Entity{
-	static final int MOVESPEED = 3, JUMPFORCE = 22, STAFFCENTERX = 25, STAFFCENTERY = 64,
+	static final int MOVESPEED = 3, JUMPFORCE = 22, STAFFCENTERX = 20, STAFFCENTERY = 50,
 			FIRERATE = 10;
 	private boolean isMovingLeft, isMovingRight, isJumping, isFiring, isFireDown,
 	leftKeyDown, rightKeyDown , isTurning, faceRight, isFireLeft, isFireRight;
@@ -34,7 +34,7 @@ public class Player extends Entity{
 		rightKeyDown = false;
 		isTurning = false;
 		faceRight = true;
-		checkBox = new CheckBox(x, y, 50, 87);
+		checkBox = new CheckBox(x, y, 39, 80);
 //		image = new Image("/images/playerImage.png");
 		
 		playerView = new ImageView("/images/playerImage.png");
@@ -70,11 +70,11 @@ public class Player extends Entity{
 		}
 	}
 	
-	public int getStaffX() {
+	public double getStaffX() {
 		return this.x+STAFFCENTERX - 14;
 	}
 	
-	public int getStaffY() {
+	public double getStaffY() {
 		return this.y+STAFFCENTERY - 31;
 	}
 	
@@ -113,7 +113,7 @@ public class Player extends Entity{
 			break;
 		case 3:
 			isFireRight = state;
-			System.out.println("fight");
+			//System.out.println("fight");
 			break;
 		}
 	}
@@ -130,13 +130,12 @@ public class Player extends Entity{
 				dy = -dy;
 			}
 			if (isFireLeft) {
-				painter.projectiles.add(new SpellConstruct(new Integer[] {0,14}), x + STAFFCENTERX, y + STAFFCENTERY, dx, dy, getStaffRotation());
+				painter.projectiles.add(new SpellConstruct(painter.cp.magicL), x + STAFFCENTERX, y + STAFFCENTERY, dx, dy, getStaffRotation());
 			}else if(isFireRight) {
-				
-				painter.projectiles.add(new SpellConstruct(new Integer[] {0,15,32,30,32,-30,0,14,32,30,32,50,0,13,0,12,0,11,32,-30,0,10}), x + STAFFCENTERX, y + STAFFCENTERY, dx, dy, getStaffRotation());
+				painter.projectiles.add(new SpellConstruct(painter.cp.magicR), x + STAFFCENTERX, y + STAFFCENTERY, dx, dy, getStaffRotation());
 				//System.out.println("fire");
 			}
-			//System.out.println(painter.projectiles.size());
+			//System.out.println(painter.projectiles.size());32,30,32,-30,0,14,32,30,32,50,0,13,0,12,0,11,32,-30,0,10
 		}
 	}
 	

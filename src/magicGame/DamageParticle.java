@@ -90,9 +90,9 @@ public class DamageParticle extends Particle{
 				imageViews.get(0).setOpacity(0);
 				painter.pane.getChildren().remove(imageViews.get(0));
 				imageViews.remove(0);
-				System.out.println("removed");
+				//System.out.println("removed");
 			}
-			System.out.println("removed complet");
+			//System.out.println("removed complet");
 			painter.particles.remove(this);
 			return false;
 		}

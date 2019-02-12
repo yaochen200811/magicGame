@@ -11,11 +11,11 @@ public class TrainerMan extends Enemy{
 		y = 250;
 		hp = 10000;
 		fullHp = hp;
-		velocity = new double[]{0,0};
 		image = new Image("/images/trainer_man.png");
+		velocity = new double[]{0,0};
 		imageView = new ImageView(image);
 		imageView.relocate(x, y);
 		painter.pane.getChildren().add(imageView);
-		checkBox = new CheckBox(x + 10, y + 10, 30, 74);
+		checkBox = new CheckBox(x + 10, y + 10, 30, 70);
 	}
 }

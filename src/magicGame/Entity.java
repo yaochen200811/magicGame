@@ -5,7 +5,8 @@ import javafx.scene.image.ImageView;
 
 public abstract class Entity {
 	static final int GRAVITY = 1;
-	int x, y, hp;
+	double x, y;
+	int hp;
 	double [] velocity;
 	boolean isOnGround;
 	Image image;
@@ -17,11 +18,19 @@ public abstract class Entity {
 		return image;
 	}
 	
-	public int getX() {
+	public double getX() {
 		return x;
 	}
 	
-	public int getY() {
+	public double getCenterX() {
+		return x + image.getWidth() / 2;
+	}
+	
+	public double getCenterY() {
+		return y + image.getHeight() / 2;
+	}
+	
+	public double getY() {
 		return y;
 	}
 	

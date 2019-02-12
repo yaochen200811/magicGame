@@ -7,6 +7,7 @@ import javafx.scene.image.ImageView;
 
 public class Projectiles extends ArrayList<Projectile>{
 	private static final long serialVersionUID = 5224869620057894418L;
+	CheckBox colict;
 
 	public boolean add(int projectileID, int x, int y, double dx, double dy, double degree) {
 		try {
@@ -49,42 +50,12 @@ public class Projectiles extends ArrayList<Projectile>{
 	
 	
 	
-	public void update(CheckBoxs[] CBsList) {
+	public void update() {
 		int moveIndex = 0;
 		while(moveIndex < this.size()) {
-			//System.out.println(3);
-			if (this.get(moveIndex).fading) {
-				//System.out.println(2);
-				if (this.get(moveIndex).fadingMove()) {
-					this.remove(moveIndex);
-				}
-			}else {
-				//System.out.println(0);
-				if (this.get(moveIndex).getHit()) {
-				}else if (!isCollision(CBsList, this.get(moveIndex))) {
-					//System.out.println(1);
-					this.get(moveIndex).setNewCoor(this.get(moveIndex).velocity);
-					this.get(moveIndex).checkBox.move(this.get(moveIndex).velocity);
-					
-				}else {
-					this.get(moveIndex).startFading();
-				}
-			}
+			if(!this.get(moveIndex).update())
 			moveIndex ++;
 		}
-	}
-	
-	public boolean isCollision(CheckBoxs[] CBsList, Projectile projectile) {
-		
-		for (CheckBoxs CBs: CBsList) {
-			for (CheckBox cb: CBs) {
-					if(projectile.checkBox.isOverlap(cb, projectile.velocity)) {
-						return true;
-					}
-			}
-		}
-		
-		return false;
 	}
 
 }

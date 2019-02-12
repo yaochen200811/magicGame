@@ -24,7 +24,7 @@ public class Enemy extends Entity{
 		painter.pane.getChildren().add(hpBar);
 	}
 	
-	public void update() {
+	public boolean update() {
 		//System.out.println("l");
 		if (isAlive()) {
 			checkMove();
@@ -36,11 +36,12 @@ public class Enemy extends Entity{
 			painter.pane.getChildren().remove(hpBarBack);
 			painter.pane.getChildren().remove(hpBar);
 				painter.enemys.remove(this);
-				return;
+				return true;
 		}else if(!clearedCheckBox) {
 			clearedCheckBox = true;
 			checkBox = new CheckBox(0,0,0,0);
 		}
+		return false;
 	}
 	
 	public boolean isAlive() {
@@ -54,6 +55,8 @@ public class Enemy extends Entity{
 			hpBar.setOpacity(0.8);
 			hpBarBack.relocate(x - 2, y - 15);
 			hpBarBack.setOpacity(0.8);
+			hpBarBack.toFront();
+			hpBar.toFront();
 			showHpCounter --;
 		}else {
 			hpBar.setOpacity(0);

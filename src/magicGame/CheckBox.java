@@ -1,10 +1,10 @@
 package magicGame;
 
 public class CheckBox {
-	int width, height, r;
+	double width, height, r;
 	private double x, y;
 	private String type;
-	
+
 	public CheckBox(double x, double y, int width, int height) {
 		this.x = x;
 		this.y = y;
@@ -12,62 +12,65 @@ public class CheckBox {
 		this.height = height;
 		type = "rectangle";
 	}
-	
-	public CheckBox(double x, double y, int r) {
+
+	public CheckBox(double x, double y, double d) {
 		this.x = x;
 		this.y = y;
-		this.r = r;
+		this.r = d;
 		type = "circle";
 	}
-	
+
+	public int checkPosition(CheckBox cb) {
+		if ((cb.y > this.y + this.height) ||(cb.y + cb.height < this.y)) {
+			return 0;
+		}
+		return 1;
+	}
+
 	public boolean isOverlap(CheckBox cb, double[] velocity) {
 		if (type == "circle") {
 			double DeltaX = x - Math.max(cb.x, Math.min(x, cb.x + cb.width));
 			double DeltaY = y - Math.max(cb.y, Math.min(y, cb.y + cb.height));
 			return (DeltaX * DeltaX + DeltaY * DeltaY) < (r * r);
 		}
-		return (!(this.x+this.width+velocity[0] <= cb.x ||
-				this.x+velocity[0] >= cb.x+cb.width ||
-				this.y+this.height+velocity[1] <= cb.y ||
-				this.y+velocity[1] >= cb.y+cb.height));
-		
-//		boolean changed = true;
-//		while ((!(this.x+this.width+velocity[0] < cb.x ||
-//				this.x+velocity[0] > cb.x+cb.width ||
-//				this.y+this.height+velocity[1] < cb.y ||
-//				this.y+velocity[1] > cb.y+cb.height)) 
-//				&& changed) {
-//			changed = false;
-//			if (!(this.x+this.width+velocity[0] < cb.x ||
-//					this.x+velocity[0] > cb.x+cb.width)
-//					&& velocity[0] != 0) {
-//				if (velocity[0] > 0) {
-//					velocity[0] -= 1;
-//					changed = true;
-//				}else if (velocity[0] < 0) {
-//					velocity[0] += 1;
-//					changed = true;
-//				}	
-//			}else if (!(this.y+this.height+velocity[1] < cb.y ||
-//					this.y+velocity[1] > cb.y+cb.height)
-//					&& velocity[1] != 0) {
-//				if (velocity[1] > 0) {
-//					velocity[1] -= 1;
-//					changed = true;
-//				}else if (velocity[1] < 0) {
-//					velocity[1] += 1;
-//					changed = true;
-//				}
-//			}
-//		}	
+		return (!(this.x + this.width + velocity[0] <= cb.x || this.x + velocity[0] >= cb.x + cb.width
+				|| this.y + this.height + velocity[1] <= cb.y || this.y + velocity[1] >= cb.y + cb.height));
+	}
+
+	public boolean isCollision(double[] velocity) {
+		for (CheckBox cb : painter.hardCB) {
+			if (this.isOverlap(cb, velocity)) {
+				return true;
+			}
+		}
+		for (CheckBox cb : painter.fieldCB) {
+			if (this.isOverlap(cb, velocity)) {
+				return true;
+			}
+		}
+		return false;
 	}
 	
+	public CheckBox getCollision(double[] velocity) {
+		for (CheckBox cb : painter.hardCB) {
+			if (this.isOverlap(cb, velocity)) {
+				return cb;
+			}
+		}
+		for (CheckBox cb : painter.fieldCB) {
+			if (this.isOverlap(cb, velocity)) {
+				return cb;
+			}
+		}
+		return new CheckBox(0,0,0);
+	}
+
 	public boolean isOnGround(CheckBox cb, double[] velocity) {
-		return (((this.x+this.width+velocity[0] > cb.x && this.x+this.width+velocity[0] < cb.x+cb.width) ||
-				(this.x+velocity[0] > cb.x && this.x+velocity[0] < cb.x+cb.width)) &&
-				(this.y+this.height+velocity[1] == cb.y));
+		return (((this.x + this.width + velocity[0] > cb.x && this.x + this.width + velocity[0] < cb.x + cb.width)
+				|| (this.x + velocity[0] > cb.x && this.x + velocity[0] < cb.x + cb.width))
+				&& (this.y + this.height + velocity[1] == cb.y));
 	}
-	
+
 	public void move(double[] velocity) {
 		this.x += velocity[0];
 		this.y += velocity[1];

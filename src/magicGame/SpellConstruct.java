@@ -12,7 +12,7 @@ public class SpellConstruct {
 			EEARTH = 10, EWATER = 11, EWIND = 12, EFIRE = 13,
 			EDARK = 14, ELIGHT = 15,
 			CGREATER = 20, CFASTER = 21, CSLOWER = 22, CJUMP = 23,
-			CPIERCE = 24, CHOMING = 25,
+			CPIERCE = 24, CHOMING = 25, CSPREDED = 26,
 			LHIT = 30, LFADE = 31, LAFTER1 = 32, LAFTER2 = 33,
 			LAFTER3 = 34, LAFTER5 = 35;
 	
@@ -23,7 +23,7 @@ public class SpellConstruct {
 		
 		change = new ArrayList<Integer>();
 		int index = 2;
-		while ((index < frames.length) && (frames[index] < 30)) {
+		while ((index < frames.length) && (frames[index] < 30) && (frames[index] >= 20)) {
 			change.add(frames[index]);
 			index ++;
 		}
