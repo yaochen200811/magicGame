@@ -52,6 +52,7 @@ public class Projectiles extends ArrayList<Projectile>{
 	
 	public void update() {
 		int moveIndex = 0;
+//		System.out.print("µ¯: " + this.size());
 		while(moveIndex < this.size()) {
 			if(!this.get(moveIndex).update())
 			moveIndex ++;

@@ -14,7 +14,7 @@ public class ConstructBox {
 	ArrayList<Integer> error, angels;
 	Group view;
 	ConstructPanel cp;
-	int x, y;
+	int x, y, startI;
 	int deepth;
 	
 	public ConstructBox(ConstructPanel cp, int x, int y, int deepth) {
@@ -40,19 +40,36 @@ public class ConstructBox {
 			}
 			angels.add(0);
 		}
+		error.add(0);
+		resetFocus(0);
 		cp.view.getChildren().add(view);
 	}
 	
 	public double getStartx() {
-		return STARTX + x * 200;
+		return STARTX + (x - startI) * 200;
 	}
 	
 	public double getStarty() {
 		return STARTY + y * 60;
 	}
 	
+	public void setX(int xValue) {
+		x = xValue;
+		updateView();
+	}
+	
+	public void updateView() {
+		for (int j = 0; j < 3; j ++) {
+			for (int i = 0; i < 3; i ++) {
+				icons.get(j*3 + i).relocate(getStartx() + (60 * i), getStarty()  + (60 * j));
+				spellView.get(j*3 + i).relocate(getStartx() + (60 * i), getStarty()  + (60 * j));
+			}
+		}
+	}
+	
 	public void showBox(int startI) {
-		if ((x >= startI) && (x <= startI + 5)){
+		this.startI = startI;
+		if ((x >= startI) && (x <= startI + 4)){
 			view.setVisible(true);
 			view.toFront();
 		}else {
@@ -61,11 +78,20 @@ public class ConstructBox {
 	}
 	
 	public void setSpell(int index, int ID) {
+		if (ID == -1) {
+			view.getChildren().remove(spellView.get(index));
+			spells.set(index, cp.mfs.getMagicFrame(ID));
+			return;
+		}
 		view.getChildren().remove(spellView.get(index));
 		spellView.set(index, new ImageView(cp.mfs.getImage(ID)));
 		spellView.get(index).relocate(getStartx() + 60 * (index % 3), getStarty()  + 60 * (index/3));
 		view.getChildren().add(spellView.get(index));
 		spells.set(index, cp.mfs.getMagicFrame(ID));
+	}
+	
+	public int getSpell(int index) {
+		return spells.get(index).id;
 	}
 	
 	public void setAngel(int index, int angel) {

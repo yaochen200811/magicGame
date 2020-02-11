@@ -19,6 +19,7 @@ public class Particles  extends ArrayList<Particle>{
 	
 	public void update() {
 		int moveIndex = 0;
+		//System.out.print("Á£: " + this.size() + "\n");
 		while(moveIndex < this.size()) {
 			if (this.get(moveIndex).update()) {
 				moveIndex ++;

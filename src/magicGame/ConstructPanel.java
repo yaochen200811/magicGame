@@ -99,6 +99,7 @@ public class ConstructPanel {
 		magicR = new Integer[] {0,15};
 		nowIcon = 0;
 		nowBox = 0;
+		nowStart = 0;
 		
 		boxs = new ArrayList<ConstructBox>();
 		switchToLeft();
@@ -207,13 +208,17 @@ public class ConstructPanel {
 					(deepth + 1), deepth + 1));
 			loadMagic(leftFrame.toArray(new Integer[leftFrame.size()]), deepth + 1);
 		}
+		nowBox = 0;
+		nowIcon = 0;
+		nowStart = 0;
+		boxs.get(nowBox).setFocus(nowIcon);
 		updateLR();
 	}
 	
 	public void showPanel() {
 		view.toFront();
 		for (ConstructBox box: boxs) {
-			box.showBox(0);
+			box.showBox(nowStart);
 		}
 		view.setVisible(true);
 	}
@@ -259,6 +264,14 @@ public class ConstructPanel {
 			boxs.get(nowBox).resetFocus(nowIcon);
 			nowBox -= 1;
 			boxs.get(nowBox).setFocus(nowIcon);
+			if (nowBox < nowStart) {
+				nowStart --;
+				for (ConstructBox box: boxs) {
+					box.showBox(nowStart);
+					box.updateView();
+				}
+				updateLR();
+			}
 		}
 	}
 	
@@ -267,6 +280,14 @@ public class ConstructPanel {
 			boxs.get(nowBox).resetFocus(nowIcon);
 			nowBox += 1;
 			boxs.get(nowBox).setFocus(nowIcon);
+			if (nowBox > nowStart + 4) {
+				nowStart ++;
+				for (ConstructBox box: boxs) {
+					box.showBox(nowStart);
+					box.updateView();
+				}
+				updateLR();
+			}
 		}
 	}
 	
@@ -276,6 +297,7 @@ public class ConstructPanel {
 		}
 		nowBox = 0;
 		nowIcon = 0;
+		nowStart = 0;
 		boxs = new ArrayList<ConstructBox>();
 	}
 	
@@ -403,12 +425,51 @@ public class ConstructPanel {
 	}
 	
 	public void setSpell() {
-		boxs.get(nowBox).setSpell(nowIcon, frames.getSpellID());
-		if (frames.getSpell().type == "link") {
-			boxs.get(nowBox).setAngel(nowIcon, 0);
-			boxs.add(nowBox + 1, new ConstructBox(this, 
-					nowBox + 1,
-					(boxs.get(nowBox).deepth + 1), boxs.get(nowBox).deepth + 1));
+		//System.out.println(nowIcon);
+		int spellId = boxs.get(nowBox).getSpell(nowIcon);
+		if (spellId == frames.getSpellID()) {
+			boxs.get(nowBox).setSpell(nowIcon, -1);
+			if (frames.getSpell().type == "link") {
+				boxs.get(nowBox).setAngel(nowIcon, 0);
+				int removeIndex = nowBox + 1;
+				int countIndex = nowIcon;
+				while (countIndex > 6) {
+					countIndex -= 1;
+					if (boxs.get(nowBox).getSpell(countIndex) != -1) {
+						removeIndex ++;
+					}
+				}
+				boxs.get(removeIndex).clearBox();
+				boxs.remove(removeIndex);
+				for (int i = removeIndex; i < boxs.size(); i ++) {
+					boxs.get(i).setX(boxs.get(i).x - 1);
+				}
+			}
+		}
+		else {
+			boxs.get(nowBox).setSpell(nowIcon, frames.getSpellID());
+			MagicFrame mf = new MagicFrame(spellId);
+			if (frames.getSpell().type == "link" && mf.type != "link") {
+				boxs.get(nowBox).setAngel(nowIcon, 0);
+				int addIndex = nowBox + 1;
+				int countIndex = nowIcon;
+				while (countIndex > 6) {
+					countIndex -= 1;
+					if (boxs.get(nowBox).getSpell(countIndex) != -1) {
+						addIndex ++;
+					}
+				}
+				boxs.add(addIndex, new ConstructBox(this, 
+						addIndex,
+						(boxs.get(nowBox).deepth + 1), boxs.get(nowBox).deepth + 1));
+				for (int i = addIndex + 1; i < boxs.size(); i ++) {
+					boxs.get(i).setX(boxs.get(i).x + 1);
+				}
+			}
+		}
+		for (ConstructBox box: boxs) {
+			box.showBox(nowStart);
+			box.updateView();
 		}
 		frames.clearSpells();
 	}
